@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Socket.IO chat</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  </head>
+  <body>
+<div class="container">
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+	<table>
+		<tr>
+			<td></td>
+			<td><button type="button" class="btn btn-lg btn-primary" id="dir_up">u p</button></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><button type="button" class="btn btn-lg btn-primary" id="dir_left">left</button></td>
+			<td></td>
+			<td><button type="button" class="btn btn-lg btn-primary" id="dir_right">right</button></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><button  type="button" class="btn btn-lg btn-primary" id="dir_down">down</button></td>
+			<td></td>
+		</tr>
+		<button type="button" class="btn btn-lg btn-primary" id-"reset"> reset </button>
+	</table>
+	<img id="imgCam" src="http://172.30.1.39:8081/test.mjpg" width="90%">
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script>
+  var socket = io();
+  $('form').submit(function(){
+    socket.emit('chat message', $('#m').val());
+    $('#m').val('');
+    return false;
+  });
+
+  function send_dir(dir){
+	socket.emit('command:dir', dir);
+  }
+
+  $('#dir_left').click(function(){
+	send_dir('left'); });
+  $('#dir_right').click(function(){
+	send_dir('right'); });
+  $('#dir_up').click(function(){
+	send_dir('up'); });
+  $('#dir_down').click(function(){
+	send_dir('down'); });
+
+  var host = window.location.hostname;
+  var port = window.location.port-1;
+  console.log("svr:",host, "port:", port);
+  var img_url = "http://"+host+ ":"+ port + "/test.mjpg"
+  var imgSrc = $('#imgCam').src = img_url;
+
+</script>
+</div>
+  </body>
+</html>
