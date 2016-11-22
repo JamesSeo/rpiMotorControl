@@ -1,0 +1,30 @@
+{
+  "name": "rpimotorcontrol",
+  "version": "1.0.0",
+  "description": "servo motor control",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesSeo/rpiMotorControl.git"
+  },
+  "keywords": [
+    "servo",
+    "rpi"
+  ],
+  "dependencies": {
+    "express": "latest",
+    "grunt": "latest",
+    "i2c-bus": "latest",
+    "pca9685": "latest",
+    "socket.io": "^1.5.0"
+  },
+  "author": "James Seo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesSeo/rpiMotorControl/issues"
+  },
+  "homepage": "https://github.com/JamesSeo/rpiMotorControl#readme"
+}
