@@ -9,33 +9,60 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<style>
+	td { 
+	padding: 10px;
+	text-align:center;
 
+	#cvInfo {
+		left: 10px;
+		top:  200px;
+		position: absolute;
+	}
+}
+</style>
   </head>
   <body>
 <div class="container">
     <ul id="messages"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
+	<span id="spn_info" ></span>
     </form>
-	<table>
+	<table cellpadding="10">
 		<tr>
 			<td></td>
 			<td><button type="button" class="btn btn-lg btn-primary" id="dir_up">u p</button></td>
 			<td></td>
 		</tr>
 		<tr>
-			<td><button type="button" class="btn btn-lg btn-primary" id="dir_left">left</button></td>
-			<td></td>
-			<td><button type="button" class="btn btn-lg btn-primary" id="dir_right">right</button></td>
+			<td>
+				<button type="button" 
+					class="btn btn-lg btn-primary" 
+					id="dir_left">left</button>
+			</td>
+			<td>
+				<button type="button" 
+					class="btn btn-lg btn-primary" 
+					id="dir_stop"> stop </button>
+			</td>
+			<td>
+				<button type="button" 
+					class="btn btn-lg btn-primary" 
+					id="dir_right">right</button>
+			</td>
 		</tr>
 		<tr>
 			<td></td>
 			<td><button  type="button" class="btn btn-lg btn-primary" id="dir_down">down</button></td>
 			<td></td>
 		</tr>
-		<button type="button" class="btn btn-lg btn-primary" id-"reset"> reset </button>
+		<button type="button" class="btn btn-lg btn-primary" id="dir_reset"> reset </button>
+		<button type="button" class="btn btn-lg btn-primary" id="btn_load"> load video</button>
+		<div class="checkbox"><label><input type="checkbox" id="chk_repeat">repeat</label></div>
 	</table>
-	<img id="imgCam" src="http://172.30.1.39:8081/test.mjpg" width="90%">
+        <img src="" width="95%" height="30%" id="imgCam" />
+       <canvas id="cvInfo"  width="300"  height="30"></canvas>
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <!-- Latest compiled and minified JavaScript -->
@@ -48,8 +75,30 @@
     return false;
   });
 
+
+  socket.on('info', function onFromEvent(msg){
+	var idx = msg.indexOf("time:"); 
+	if (idx>=0) {// time info 
+		var canvas = document.getElementById("cvInfo");
+		var ctx = canvas.getContext('2d');
+		ctx.fillStyle ="#fff";
+		ctx.fillRect(0,0,canvas.width, canvas.height);
+		ctx.fillStyle ="#000";
+		ctx.font = "13px Courier";
+		ctx.fillText(msg, 10,10);
+	}
+	else {
+		console.log("server info:", msg);
+		$('#spn_info').text(msg);
+	}
+});
+
   function send_dir(dir){
 	socket.emit('command:dir', dir);
+  }
+
+  function req_info(info){
+	socket.emit('command:info', info);
   }
 
   $('#dir_left').click(function(){
@@ -61,11 +110,38 @@
   $('#dir_down').click(function(){
 	send_dir('down'); });
 
-  var host = window.location.hostname;
-  var port = window.location.port-1;
-  console.log("svr:",host, "port:", port);
-  var img_url = "http://"+host+ ":"+ port + "/test.mjpg"
-  var imgSrc = $('#imgCam').src = img_url;
+  $('#dir_reset').click(function(){
+	send_dir('reset');
+	});
+
+  $('#dir_stop').click(function(){
+	send_dir('stop');
+	});
+  
+  $('#chk_repeat').click(function(){
+	send_dir('repeat'+ this.checked);
+	});
+
+  function video_load() {
+  	var host = window.location.hostname;
+	var port = window.location.port-1;
+  	console.log("svr:",host, "port:", port);
+  	//var img_url = "http://"+host+ ":"+ port + "/test.mjpg";
+	var img_url = "http://"+host+ ":"+port +  "/?action=stream" ;
+  	$('#imgCam').prop('src', img_url);
+  	//$('#frmImage').prop('src', img_url);
+  }
+	
+
+  $('#btn_load').click(function(){
+	video_load();
+  });
+  
+$(function(){// document ready state 
+	video_load();	
+	req_info("info");
+});  
+
 
 </script>
 </div>
